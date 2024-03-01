@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <form id="sign-in">
+      <br />
+      <label for="email">email</label><br />
+      <input type="text" class="email" id="email" required /><br />
+      <label for="password">passwod</label><br />
+      <input type="password" class="password" id="password" required /><br />
+      <button type="submit">log in</button><br />
+    </form>
+    <br />
+    <div id="logInResponse"></div>
+    <h3>don't have an account , you can create a new one</h3>
+    <br />
+    <form id="sign-up">
+      <br />
+      <label for="name">name</label><br />
+      <input type="text" class="name" id="username" required /><br />
+      <label for="email">email</label><br />
+      <input type="text" class="email" id="useremail" required /><br />
+      <label for="password">passwod</label><br />
+      <input
+        type="password"
+        class="password"
+        id="userpassword"
+        required
+      /><br />
+      <button type="submit">sign up</button><br />
+    </form>
+
+    <script>
+      const signInForm = document.getElementById("sign-in");
+      const singUpForm = document.getElementById("sign-up");
+      // login form handler
+      signInForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const userData = { email, password };
+        connect(userData);
+      });
+
+      async function connect(userData) {
+        try {
+          const response = await fetch("/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(userData),
+          });
+          const data = await response.json();
+
+          if (response.ok) {
+            document.getElementById(
+              "logInResponse"
+            ).innerHTML = ` <P>success , ${data.message} , ${data.user.name}</p> , <br>   <form action="/dashboard" method="get">
+      <input type="submit" value="go to you chat space ">
+    </form> `;
+          } else { 
+            document.getElementById(
+              "logInResponse"
+            ).innerText = `Login failed. ${data.message}`;
+          }
+        } catch (error) {
+          console.log(error.message);
+        }
+      }
+      // signup form handler
+      singUpForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const username = document.getElementById("username").value;
+
+        const useremail = document.getElementById("useremail").value;
+        const userpassword = document.getElementById("userpassword").value;
+        const userData = { username, useremail, userpassword };
+
+        try {
+          const response = await fetch("/register", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(userData),
+          });
+
+          const data = await response.json();
+          if (!response.ok) {
+            document.getElementById(
+              "logInResponse"
+            ).innerText = `Register  failed. ${data.message}`;
+          }
+        } catch (error) {
+          console.log(error.message);
+        }
+      });
+    </script>
+
+  </body>
+</html>
